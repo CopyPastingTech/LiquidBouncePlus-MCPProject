@@ -24,8 +24,6 @@ import net.minecraft.util.WeightedRandom;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 import net.optifine.BlockPosM;
-import net.optifine.reflect.Reflector;
-import net.optifine.reflect.ReflectorForge;
 
 public final class SpawnerAnimals
 {
@@ -191,10 +189,7 @@ public final class SpawnerAnimals
                                                 {
                                                     this.mapSampleEntitiesByClass.remove(biomegenbase$spawnlistentry.entityClass);
 
-                                                    if (!ReflectorForge.doSpecialSpawn(entityliving, worldServerIn, f, i3, f1))
-                                                    {
-                                                        ientitylivingdata = entityliving.onInitialSpawn(worldServerIn.getDifficultyForLocation(new BlockPos(entityliving)), ientitylivingdata);
-                                                    }
+                                                    ientitylivingdata = entityliving.onInitialSpawn(worldServerIn.getDifficultyForLocation(new BlockPos(entityliving)), ientitylivingdata);
 
                                                     if (entityliving.isNotColliding())
                                                     {

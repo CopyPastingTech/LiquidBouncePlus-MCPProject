@@ -39,8 +39,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.optifine.BlockPosM;
 import net.optifine.CustomBlockLayers;
 import net.optifine.override.ChunkCacheOF;
-import net.optifine.reflect.Reflector;
-import net.optifine.reflect.ReflectorForge;
 import net.optifine.render.AabbFrame;
 import net.optifine.render.RenderEnv;
 import net.optifine.shaders.SVertexBuilder;
@@ -547,6 +545,30 @@ public class RenderChunk
             {
                 return enumworldblocklayer;
             }
+        }
+
+        if (this.isMipmaps)
+        {
+            if (p_fixBlockLayer_2_ == EnumWorldBlockLayer.CUTOUT)
+            {
+                Block block = p_fixBlockLayer_1_.getBlock();
+
+                if (block instanceof BlockRedstoneWire)
+                {
+                    return p_fixBlockLayer_2_;
+                }
+
+                if (block instanceof BlockCactus)
+                {
+                    return p_fixBlockLayer_2_;
+                }
+
+                return EnumWorldBlockLayer.CUTOUT_MIPPED;
+            }
+        }
+        else if (p_fixBlockLayer_2_ == EnumWorldBlockLayer.CUTOUT_MIPPED)
+        {
+            return EnumWorldBlockLayer.CUTOUT;
         }
 
         return p_fixBlockLayer_2_;

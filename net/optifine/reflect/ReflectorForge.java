@@ -53,15 +53,4 @@ public class ReflectorForge
             }
         }
     }
-
-    public static boolean armorHasOverlay(ItemArmor itemArmor, ItemStack itemStack)
-    {
-        int i = itemArmor.getColor(itemStack);
-        return i != -1;
-    }
-
-    public static boolean doSpecialSpawn(EntityLiving entityliving, World world, float x, int y, float z)
-    {
-        return false;
-    }
 }

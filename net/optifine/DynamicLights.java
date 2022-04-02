@@ -30,7 +30,6 @@ import net.optifine.config.ConnectedParser;
 import net.optifine.config.EntityClassLocator;
 import net.optifine.config.IObjectLocator;
 import net.optifine.config.ItemLocator;
-import net.optifine.reflect.ReflectorForge;
 import net.optifine.util.PropertiesOrdered;
 
 public class DynamicLights

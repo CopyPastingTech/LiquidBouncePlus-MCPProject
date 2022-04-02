@@ -62,8 +62,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3i;
 import net.optifine.CustomColors;
 import net.optifine.CustomItems;
-import net.optifine.reflect.Reflector;
-import net.optifine.reflect.ReflectorForge;
 import net.optifine.shaders.Shaders;
 import net.optifine.shaders.ShadersRender;
 
@@ -1191,29 +1189,5 @@ public class RenderItem implements IResourceManagerReloadListener
     public void onResourceManagerReload(IResourceManager resourceManager)
     {
         this.itemModelMesher.rebuildCache();
-    }
-
-    public static void forgeHooksClient_putQuadColor(WorldRenderer p_forgeHooksClient_putQuadColor_0_, BakedQuad p_forgeHooksClient_putQuadColor_1_, int p_forgeHooksClient_putQuadColor_2_)
-    {
-        float f = (float)(p_forgeHooksClient_putQuadColor_2_ & 255);
-        float f1 = (float)(p_forgeHooksClient_putQuadColor_2_ >>> 8 & 255);
-        float f2 = (float)(p_forgeHooksClient_putQuadColor_2_ >>> 16 & 255);
-        float f3 = (float)(p_forgeHooksClient_putQuadColor_2_ >>> 24 & 255);
-        int[] aint = p_forgeHooksClient_putQuadColor_1_.getVertexData();
-        int i = aint.length / 4;
-
-        for (int j = 0; j < 4; ++j)
-        {
-            int k = aint[3 + i * j];
-            float f4 = (float)(k & 255);
-            float f5 = (float)(k >>> 8 & 255);
-            float f6 = (float)(k >>> 16 & 255);
-            float f7 = (float)(k >>> 24 & 255);
-            int l = Math.min(255, (int)(f * f4 / 255.0F));
-            int i1 = Math.min(255, (int)(f1 * f5 / 255.0F));
-            int j1 = Math.min(255, (int)(f2 * f6 / 255.0F));
-            int k1 = Math.min(255, (int)(f3 * f7 / 255.0F));
-            p_forgeHooksClient_putQuadColor_0_.putColorRGBA(p_forgeHooksClient_putQuadColor_0_.getColorIndex(4 - j), l, i1, j1, k1);
-        }
     }
 }
