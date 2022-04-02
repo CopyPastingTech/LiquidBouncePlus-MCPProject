@@ -1,4 +1,6 @@
 package club.lbplus.impls.events.player;
 
-public class ConfirmedStepEvent {
+import club.lbplus.cores.event.Event;
+
+public class ConfirmedStepEvent extends Event {
 }

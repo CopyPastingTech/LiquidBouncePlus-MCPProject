@@ -2,6 +2,7 @@ package club.lbplus.cores.module;
 
 import club.lbplus.impls.modules.misc.TestMod;
 import club.lbplus.LiquidCore;
+import club.lbplus.impls.modules.visuals.GlobalGUI;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ public class ModManager {
     private ArrayList<Mod> modules = new ArrayList<>();
 
     public ModManager() {
-        addAllModules(new TestMod());
+        addAllModules(new TestMod(), new GlobalGUI());
     }
 
     public void addAllModules(Mod... mods) {

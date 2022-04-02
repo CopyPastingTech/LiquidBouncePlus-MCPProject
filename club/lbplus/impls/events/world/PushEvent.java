@@ -1,4 +1,6 @@
 package club.lbplus.impls.events.world;
 
-public class PushEvent {
+import club.lbplus.cores.event.Event;
+
+public class PushEvent extends Event {
 }

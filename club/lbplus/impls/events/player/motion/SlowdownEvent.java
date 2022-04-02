@@ -8,8 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class JumpEvent extends Event {
+public class SlowdownEvent extends Event {
 
-    private float motion;
+    private float strafe;
+    private float forward;
 
 }

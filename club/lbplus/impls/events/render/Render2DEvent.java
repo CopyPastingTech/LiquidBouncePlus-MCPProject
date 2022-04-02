@@ -1,4 +1,13 @@
 package club.lbplus.impls.events.render;
 
-public class Render2DEvent {
+import club.lbplus.cores.event.Event;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class Render2DEvent extends Event {
+
+    private final float partialTicks;
+
 }

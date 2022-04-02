@@ -1,4 +1,6 @@
 package club.lbplus.impls.events.player;
 
-public class UpdateEvent {
+import club.lbplus.cores.event.Event;
+
+public class UpdateEvent extends Event {
 }

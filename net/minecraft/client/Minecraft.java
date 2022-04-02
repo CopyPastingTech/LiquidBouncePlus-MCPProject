@@ -1,5 +1,6 @@
 package net.minecraft.client;
 
+import club.lbplus.utils.misc.IconUtils;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -679,6 +680,12 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         if (util$enumos != Util.EnumOS.OSX)
         {
+            final ByteBuffer[] customFavicon = IconUtils.getFavicon();
+            if (customFavicon != null) {
+                Display.setIcon(customFavicon);
+                return;
+            }
+
             InputStream inputstream = null;
             InputStream inputstream1 = null;
 
