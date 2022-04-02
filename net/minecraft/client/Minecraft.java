@@ -1,6 +1,8 @@
 package net.minecraft.client;
 
+import club.lbplus.impls.events.misc.LoopEvent;
 import club.lbplus.utils.misc.IconUtils;
+import club.lbplus.utils.render.RenderUtils;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -365,6 +367,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     int fpsCounter;
     long prevFrameTime = -1L;
 
+    private long lastFrame = getTime();
+
     /** Profiler currently displayed in the debug screen pie chart */
     private String debugProfilerName = "root";
 
@@ -631,7 +635,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     private void createDisplay() throws LWJGLException
     {
         Display.setResizable(true);
-        Display.setTitle("LiquidBounce+ Reloaded");
+        Display.setTitle("LiquidBounce+ Reloaded b" + LiquidCore.BUILD_VERSION);
 
         try
         {
@@ -1090,11 +1094,23 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         System.gc();
     }
 
+    public long getTime() {
+        return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+    }
+
     /**
      * Called repeatedly from run()
      */
     private void runGameLoop() throws IOException
     {
+        if (!LiquidCore.isStarting) new LoopEvent().call();
+
+        final long currentTime = getTime();
+        final int deltaTime = (int) (currentTime - lastFrame);
+        lastFrame = currentTime;
+
+        RenderUtils.deltaTime = deltaTime;
+
         long i = System.nanoTime();
         this.mcProfiler.startSection("root");
 
@@ -1207,7 +1223,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         while (getSystemTime() >= this.debugUpdateTime + 1000L)
         {
             debugFPS = this.fpsCounter;
-            this.debug = String.format("%d fps (%d chunk update%s) T: %s%s%s%s%s", new Object[] {Integer.valueOf(debugFPS), Integer.valueOf(RenderChunk.renderChunksUpdated), RenderChunk.renderChunksUpdated != 1 ? "s" : "", (float)this.gameSettings.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax() ? "inf" : Integer.valueOf(this.gameSettings.limitFramerate), this.gameSettings.enableVsync ? " vsync" : "", this.gameSettings.fancyGraphics ? "" : " fast", this.gameSettings.clouds == 0 ? "" : (this.gameSettings.clouds == 1 ? " fast-clouds" : " fancy-clouds"), OpenGlHelper.useVbo() ? " vbo" : ""});
+            this.debug = String.format("%d fps (%d ms/frame) (%d chunk update%s) T: %s%s%s%s%s", new Object[] {Integer.valueOf(debugFPS), (int) RenderUtils.deltaTime, Integer.valueOf(RenderChunk.renderChunksUpdated), RenderChunk.renderChunksUpdated != 1 ? "s" : "", (float)this.gameSettings.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax() ? "inf" : Integer.valueOf(this.gameSettings.limitFramerate), this.gameSettings.enableVsync ? " vsync" : "", this.gameSettings.fancyGraphics ? "" : " fast", this.gameSettings.clouds == 0 ? "" : (this.gameSettings.clouds == 1 ? " fast-clouds" : " fancy-clouds"), OpenGlHelper.useVbo() ? " vbo" : ""});
             RenderChunk.renderChunksUpdated = 0;
             this.debugUpdateTime += 1000L;
             this.fpsCounter = 0;
@@ -1265,7 +1281,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     public int getLimitFramerate()
     {
-        return this.theWorld == null && this.currentScreen != null ? 30 : this.gameSettings.limitFramerate;
+        return this.theWorld == null && this.currentScreen != null ? 60 : this.gameSettings.limitFramerate;
     }
 
     public boolean isFramerateLimitBelowMax()

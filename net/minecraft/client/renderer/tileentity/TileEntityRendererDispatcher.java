@@ -117,11 +117,6 @@ public class TileEntityRendererDispatcher
         {
             boolean flag = true;
 
-            if (Reflector.ForgeTileEntity_hasFastRenderer.exists())
-            {
-                flag = !this.drawingBatch || !Reflector.callBoolean(tileentityIn, Reflector.ForgeTileEntity_hasFastRenderer, new Object[0]);
-            }
-
             if (flag)
             {
                 RenderHelper.enableStandardItemLighting();
@@ -178,7 +173,7 @@ public class TileEntityRendererDispatcher
             {
                 this.tileEntityRendered = tileEntityIn;
 
-                if (this.drawingBatch && Reflector.callBoolean(tileEntityIn, Reflector.ForgeTileEntity_hasFastRenderer, new Object[0]))
+                if (this.drawingBatch)
                 {
                     tileentityspecialrenderer.renderTileEntityFast(tileEntityIn, x, y, z, partialTicks, destroyStage, this.batchBuffer.getWorldRenderer());
                 }

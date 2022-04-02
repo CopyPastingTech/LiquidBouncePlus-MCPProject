@@ -72,13 +72,6 @@ public class BlockAliases
 
         if (shaderPack != null)
         {
-            if (Reflector.Loader_getActiveModList.exists() && Minecraft.getMinecraft().getResourcePackRepository() == null)
-            {
-                Config.dbg("[Shaders] Delayed loading of block mappings after resources are loaded");
-                updateOnResourcesReloaded = true;
-            }
-            else
-            {
                 List<List<BlockAlias>> list = new ArrayList();
                 String s = "/shaders/block.properties";
                 InputStream inputstream = shaderPack.getResourceAsStream(s);
@@ -88,34 +81,10 @@ public class BlockAliases
                     loadBlockAliases(inputstream, s, list);
                 }
 
-                loadModBlockAliases(list);
-
                 if (((List)list).size() > 0)
                 {
                     blockAliases = toArrays(list);
                 }
-            }
-        }
-    }
-
-    private static void loadModBlockAliases(List<List<BlockAlias>> listBlockAliases)
-    {
-        String[] astring = ReflectorForge.getForgeModIds();
-
-        for (int i = 0; i < astring.length; ++i)
-        {
-            String s = astring[i];
-
-            try
-            {
-                ResourceLocation resourcelocation = new ResourceLocation(s, "shaders/block.properties");
-                InputStream inputstream = Config.getResourceStream(resourcelocation);
-                loadBlockAliases(inputstream, resourcelocation.toString(), listBlockAliases);
-            }
-            catch (IOException var6)
-            {
-                ;
-            }
         }
     }
 

@@ -9,6 +9,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LiquidCore {
+    public static final int BUILD_VERSION = 1;
+
     private static LiquidCore inst;
     public final Logger logger = LogManager.getLogger("LiquidBounce+ Reloaded");
 
@@ -18,14 +20,13 @@ public class LiquidCore {
     public SoundHandler soundHandler;
 
     private long startMS = 0L;
-    public boolean isStarting = false;
+    public static boolean isStarting = true;
 
     public static final LiquidCore getCore() {
         return inst == null ? inst = new LiquidCore() : inst;
     }
 
     public void startInject() {
-        isStarting = true;
         startMS = System.currentTimeMillis();
         log("Starting the client.");
 
@@ -39,6 +40,8 @@ public class LiquidCore {
         keyHandler = new KeyHandler();
         eventManager.register(keyHandler);
         soundHandler = new SoundHandler();
+
+        log("Font Cache Handler at " + getRunMS());
 
         log("Successfully loaded the client in " + getRunMS());
         isStarting = false;

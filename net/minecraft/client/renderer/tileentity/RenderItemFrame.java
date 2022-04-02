@@ -131,8 +131,6 @@ public class RenderItemFrame extends Render<EntityItemFrame>
 
             GlStateManager.rotate((float)i * 360.0F / 8.0F, 0.0F, 0.0F, 1.0F);
 
-            if (!Reflector.postForgeBusEvent(Reflector.RenderItemInFrameEvent_Constructor, new Object[] {itemFrame, this}))
-            {
                 if (item instanceof ItemMap)
                 {
                     this.renderManager.renderEngine.bindTexture(mapBackgroundTextures);
@@ -192,7 +190,7 @@ public class RenderItemFrame extends Render<EntityItemFrame>
                         textureatlassprite.updateAnimation();
                     }
                 }
-            }
+
             GlStateManager.enableLighting();
             GlStateManager.popMatrix();
         }

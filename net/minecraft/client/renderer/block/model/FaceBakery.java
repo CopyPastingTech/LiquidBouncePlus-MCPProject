@@ -1,6 +1,5 @@
 package net.minecraft.client.renderer.block.model;
 
-import net.minecraftforge.client.model.ITransformation;
 import net.optifine.model.BlockModelUtils;
 import net.optifine.reflect.Reflector;
 import net.optifine.shaders.Shaders;
@@ -21,12 +20,7 @@ public class FaceBakery
     private static final float SCALE_ROTATION_22_5 = 1.0F / (float)Math.cos(0.39269909262657166D) - 1.0F;
     private static final float SCALE_ROTATION_GENERAL = 1.0F / (float)Math.cos((Math.PI / 4D)) - 1.0F;
 
-    public BakedQuad makeBakedQuad(Vector3f posFrom, Vector3f posTo, BlockPartFace face, TextureAtlasSprite sprite, EnumFacing facing, ModelRotation modelRotationIn, BlockPartRotation partRotation, boolean uvLocked, boolean shade)
-    {
-        return this.makeBakedQuad(posFrom, posTo, face, sprite, facing, (ITransformation)modelRotationIn, partRotation, uvLocked, shade);
-    }
-
-    public BakedQuad makeBakedQuad(Vector3f p_makeBakedQuad_1_, Vector3f p_makeBakedQuad_2_, BlockPartFace p_makeBakedQuad_3_, TextureAtlasSprite p_makeBakedQuad_4_, EnumFacing p_makeBakedQuad_5_, ITransformation p_makeBakedQuad_6_, BlockPartRotation p_makeBakedQuad_7_, boolean p_makeBakedQuad_8_, boolean p_makeBakedQuad_9_)
+    public BakedQuad makeBakedQuad(Vector3f p_makeBakedQuad_1_, Vector3f p_makeBakedQuad_2_, BlockPartFace p_makeBakedQuad_3_, TextureAtlasSprite p_makeBakedQuad_4_, EnumFacing p_makeBakedQuad_5_, ModelRotation p_makeBakedQuad_6_, BlockPartRotation p_makeBakedQuad_7_, boolean p_makeBakedQuad_8_, boolean p_makeBakedQuad_9_)
     {
         int[] aint = this.makeQuadVertexData(p_makeBakedQuad_3_, p_makeBakedQuad_4_, p_makeBakedQuad_5_, this.getPositionsDiv16(p_makeBakedQuad_1_, p_makeBakedQuad_2_), p_makeBakedQuad_6_, p_makeBakedQuad_7_, p_makeBakedQuad_8_, p_makeBakedQuad_9_);
         EnumFacing enumfacing = getFacingFromVertexData(aint);
@@ -41,15 +35,10 @@ public class FaceBakery
             this.applyFacing(aint, enumfacing);
         }
 
-        if (Reflector.ForgeHooksClient_fillNormal.exists())
-        {
-            Reflector.call(Reflector.ForgeHooksClient_fillNormal, new Object[] {aint, enumfacing});
-        }
-
         return new BakedQuad(aint, p_makeBakedQuad_3_.tintIndex, enumfacing);
     }
 
-    private int[] makeQuadVertexData(BlockPartFace p_makeQuadVertexData_1_, TextureAtlasSprite p_makeQuadVertexData_2_, EnumFacing p_makeQuadVertexData_3_, float[] p_makeQuadVertexData_4_, ITransformation p_makeQuadVertexData_5_, BlockPartRotation p_makeQuadVertexData_6_, boolean p_makeQuadVertexData_7_, boolean p_makeQuadVertexData_8_)
+    private int[] makeQuadVertexData(BlockPartFace p_makeQuadVertexData_1_, TextureAtlasSprite p_makeQuadVertexData_2_, EnumFacing p_makeQuadVertexData_3_, float[] p_makeQuadVertexData_4_, ModelRotation p_makeQuadVertexData_5_, BlockPartRotation p_makeQuadVertexData_6_, boolean p_makeQuadVertexData_7_, boolean p_makeQuadVertexData_8_)
     {
         int i = 28;
 
@@ -125,7 +114,7 @@ public class FaceBakery
         return afloat;
     }
 
-    private void fillVertexData(int[] p_fillVertexData_1_, int p_fillVertexData_2_, EnumFacing p_fillVertexData_3_, BlockPartFace p_fillVertexData_4_, float[] p_fillVertexData_5_, TextureAtlasSprite p_fillVertexData_6_, ITransformation p_fillVertexData_7_, BlockPartRotation p_fillVertexData_8_, boolean p_fillVertexData_9_, boolean p_fillVertexData_10_)
+    private void fillVertexData(int[] p_fillVertexData_1_, int p_fillVertexData_2_, EnumFacing p_fillVertexData_3_, BlockPartFace p_fillVertexData_4_, float[] p_fillVertexData_5_, TextureAtlasSprite p_fillVertexData_6_, ModelRotation p_fillVertexData_7_, BlockPartRotation p_fillVertexData_8_, boolean p_fillVertexData_9_, boolean p_fillVertexData_10_)
     {
         EnumFacing enumfacing = p_fillVertexData_7_.rotate(p_fillVertexData_3_);
         int i = p_fillVertexData_10_ ? this.getFaceShadeColor(enumfacing) : -1;
@@ -195,12 +184,7 @@ public class FaceBakery
         }
     }
 
-    public int rotateVertex(Vector3f position, EnumFacing facing, int vertexIndex, ModelRotation modelRotationIn, boolean uvLocked)
-    {
-        return this.rotateVertex(position, facing, vertexIndex, modelRotationIn, uvLocked);
-    }
-
-    public int rotateVertex(Vector3f p_rotateVertex_1_, EnumFacing p_rotateVertex_2_, int p_rotateVertex_3_, ITransformation p_rotateVertex_4_, boolean p_rotateVertex_5_)
+    public int rotateVertex(Vector3f p_rotateVertex_1_, EnumFacing p_rotateVertex_2_, int p_rotateVertex_3_, ModelRotation p_rotateVertex_4_, boolean p_rotateVertex_5_)
     {
         if (p_rotateVertex_4_ == ModelRotation.X0_Y0)
         {
@@ -208,15 +192,7 @@ public class FaceBakery
         }
         else
         {
-            if (Reflector.ForgeHooksClient_transform.exists())
-            {
-                Reflector.call(Reflector.ForgeHooksClient_transform, new Object[] {p_rotateVertex_1_, p_rotateVertex_4_.getMatrix()});
-            }
-            else
-            {
-                this.rotateScale(p_rotateVertex_1_, new Vector3f(0.5F, 0.5F, 0.5F), ((ModelRotation) p_rotateVertex_4_).getMatrix4d(), new Vector3f(1.0F, 1.0F, 1.0F));
-            }
-
+            this.rotateScale(p_rotateVertex_1_, new Vector3f(0.5F, 0.5F, 0.5F), ((ModelRotation) p_rotateVertex_4_).getMatrix4d(), new Vector3f(1.0F, 1.0F, 1.0F));
             return p_rotateVertex_4_.rotate(p_rotateVertex_2_, p_rotateVertex_3_);
         }
     }

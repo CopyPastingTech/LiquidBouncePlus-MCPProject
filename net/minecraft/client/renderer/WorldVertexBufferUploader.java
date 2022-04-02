@@ -25,20 +25,12 @@ public class WorldVertexBufferUploader
             int i = vertexformat.getNextOffset();
             ByteBuffer bytebuffer = p_181679_1_.getByteBuffer();
             List<VertexFormatElement> list = vertexformat.getElements();
-            boolean flag = Reflector.ForgeVertexFormatElementEnumUseage_preDraw.exists();
-            boolean flag1 = Reflector.ForgeVertexFormatElementEnumUseage_postDraw.exists();
 
             for (int j = 0; j < list.size(); ++j)
             {
                 VertexFormatElement vertexformatelement = (VertexFormatElement)list.get(j);
                 VertexFormatElement.EnumUsage vertexformatelement$enumusage = vertexformatelement.getUsage();
 
-                if (flag)
-                {
-                    Reflector.callVoid(vertexformatelement$enumusage, Reflector.ForgeVertexFormatElementEnumUseage_preDraw, new Object[] {vertexformat, Integer.valueOf(j), Integer.valueOf(i), bytebuffer});
-                }
-                else
-                {
                     int k = vertexformatelement.getType().getGlConstant();
                     int l = vertexformatelement.getIndex();
                     bytebuffer.position(vertexformat.getOffset(j));
@@ -66,7 +58,7 @@ public class WorldVertexBufferUploader
                             GL11.glNormalPointer(k, i, bytebuffer);
                             GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
                     }
-                }
+
             }
 
             if (p_181679_1_.isMultiTexture())
@@ -89,12 +81,6 @@ public class WorldVertexBufferUploader
                 VertexFormatElement vertexformatelement1 = (VertexFormatElement)list.get(j1);
                 VertexFormatElement.EnumUsage vertexformatelement$enumusage1 = vertexformatelement1.getUsage();
 
-                if (flag1)
-                {
-                    Reflector.callVoid(vertexformatelement$enumusage1, Reflector.ForgeVertexFormatElementEnumUseage_postDraw, new Object[] {vertexformat, Integer.valueOf(j1), Integer.valueOf(i), bytebuffer});
-                }
-                else
-                {
                     int i1 = vertexformatelement1.getIndex();
 
                     switch (vertexformatelement$enumusage1)
@@ -117,7 +103,7 @@ public class WorldVertexBufferUploader
                         case NORMAL:
                             GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
                     }
-                }
+
             }
         }
 

@@ -103,23 +103,6 @@ public class DynamicLights
         initialized = true;
         mapEntityLightLevels.clear();
         mapItemLightLevels.clear();
-        String[] astring = ReflectorForge.getForgeModIds();
-
-        for (int i = 0; i < astring.length; ++i)
-        {
-            String s = astring[i];
-
-            try
-            {
-                ResourceLocation resourcelocation = new ResourceLocation(s, "optifine/dynamic_lights.properties");
-                InputStream inputstream = Config.getResourceStream(resourcelocation);
-                loadModConfiguration(inputstream, resourcelocation.toString(), s);
-            }
-            catch (IOException var5)
-            {
-                ;
-            }
-        }
 
         if (mapEntityLightLevels.size() > 0)
         {

@@ -51,13 +51,6 @@ public class EntityAliases
 
         if (shaderPack != null)
         {
-            if (Reflector.Loader_getActiveModList.exists() && Config.getResourceManager() == null)
-            {
-                Config.dbg("[Shaders] Delayed loading of entity mappings after resources are loaded");
-                updateOnResourcesReloaded = true;
-            }
-            else
-            {
                 List<Integer> list = new ArrayList();
                 String s = "/shaders/entity.properties";
                 InputStream inputstream = shaderPack.getResourceAsStream(s);
@@ -67,34 +60,10 @@ public class EntityAliases
                     loadEntityAliases(inputstream, s, list);
                 }
 
-                loadModEntityAliases(list);
-
                 if (((List)list).size() > 0)
                 {
                     entityAliases = toArray(list);
                 }
-            }
-        }
-    }
-
-    private static void loadModEntityAliases(List<Integer> listEntityAliases)
-    {
-        String[] astring = ReflectorForge.getForgeModIds();
-
-        for (int i = 0; i < astring.length; ++i)
-        {
-            String s = astring[i];
-
-            try
-            {
-                ResourceLocation resourcelocation = new ResourceLocation(s, "shaders/entity.properties");
-                InputStream inputstream = Config.getResourceStream(resourcelocation);
-                loadEntityAliases(inputstream, resourcelocation.toString(), listEntityAliases);
-            }
-            catch (IOException var6)
-            {
-                ;
-            }
         }
     }
 

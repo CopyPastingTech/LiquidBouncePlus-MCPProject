@@ -158,7 +158,6 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         this.mapUploadedSprites.clear();
         this.listAnimatedSprites.clear();
         int i = Integer.MAX_VALUE;
-        Reflector.callVoid(Reflector.ForgeHooksClient_onTextureStitchedPre, new Object[] {this});
         int j = this.getMinSpriteSize();
         this.iconGridSize = j;
         int k = 1 << this.mipmapLevels;
@@ -273,13 +272,11 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
                     catch (RuntimeException runtimeexception)
                     {
                         logger.error((String)("Unable to parse metadata from " + resourcelocation2), (Throwable)runtimeexception);
-                        ReflectorForge.FMLClientHandler_trackBrokenTexture(resourcelocation2, runtimeexception.getMessage());
                         continue;
                     }
                     catch (IOException ioexception1)
                     {
                         logger.error("Using missing texture, unable to load " + resourcelocation2 + ", " + ioexception1.getClass().getName());
-                        ReflectorForge.FMLClientHandler_trackMissingTexture(resourcelocation2);
                         continue;
                     }
 
@@ -476,7 +473,6 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
                 Config.getMinecraft().getTextureManager().bindTexture(locationBlocksTexture);
             }
 
-            Reflector.callVoid(Reflector.ForgeHooksClient_onTextureStitchedPost, new Object[] {this});
             this.updateIconGrid(stitcher.getCurrentWidth(), stitcher.getCurrentHeight());
 
             if (Config.equals(System.getProperty("saveTextureMap"), "true"))
