@@ -4,6 +4,6 @@ import net.minecraft.client.Minecraft;
 
 public class GlobalInstances {
 
-    protected final Minecraft mc = Minecraft.getMinecraft();
+    protected static final Minecraft mc = Minecraft.getMinecraft();
 
 }

@@ -1,8 +1,11 @@
 package club.lbplus.impls.modules.misc;
 
+import club.lbplus.cores.event.EventTarget;
 import club.lbplus.cores.module.Category;
 import club.lbplus.cores.module.Mod;
+import club.lbplus.impls.events.render.RenderTooltipEvent;
 import club.lbplus.impls.values.BoolValue;
+import net.minecraft.client.gui.Gui;
 import org.lwjgl.input.Keyboard;
 
 public class TestMod extends Mod {
@@ -21,6 +24,11 @@ public class TestMod extends Mod {
     @Override
     public void onDisable() {
         mc.thePlayer.sendChatMessage("bye" + boolValue.get());
+    }
+
+    @EventTarget
+    public void onRenderTooltip(RenderTooltipEvent event) {
+        Gui.drawRect(200, 200, 300, 150, -1);
     }
 
 }

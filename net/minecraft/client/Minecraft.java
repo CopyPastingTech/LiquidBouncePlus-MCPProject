@@ -1,6 +1,9 @@
 package net.minecraft.client;
 
 import club.lbplus.impls.events.misc.LoopEvent;
+import club.lbplus.ui.guis.GuiGlobalMenu;
+import club.lbplus.ui.guis.SplashScreen;
+import club.lbplus.utils.fonts.FontManager;
 import club.lbplus.utils.misc.IconUtils;
 import club.lbplus.utils.render.RenderUtils;
 import com.google.common.collect.Iterables;
@@ -16,6 +19,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +56,6 @@ import net.minecraft.client.gui.GuiControls;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiIngameMenu;
-import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiMemoryErrorScreen;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSleepMP;
@@ -209,7 +212,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     private ServerData currentServerData;
 
     /** The RenderEngine instance used by Minecraft */
-    private TextureManager renderEngine;
+    public TextureManager renderEngine;
 
     /**
      * Set to 'this' in Minecraft constructor; used by some settings get methods
@@ -227,7 +230,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     /** True if the player is connected to a realms server */
     private boolean connectedToRealms = false;
-    private Timer timer = new Timer(20.0F);
+    public Timer timer = new Timer(20.0F);
 
     /** Instance of PlayerUsageSnooper. */
     private PlayerUsageSnooper usageSnooper = new PlayerUsageSnooper("client", this, MinecraftServer.getCurrentTimeMillis());
@@ -324,12 +327,12 @@ public class Minecraft implements IThreadListener, IPlayerUsage
      * Keeps track of how long the debug crash keycombo (F3+C) has been pressed for, in order to crash after 10 seconds.
      */
     private long debugCrashKeyPressTime = -1L;
-    private IReloadableResourceManager mcResourceManager;
+    public IReloadableResourceManager mcResourceManager;
     private final IMetadataSerializer metadataSerializer_ = new IMetadataSerializer();
     private final List<IResourcePack> defaultResourcePacks = Lists.<IResourcePack>newArrayList();
-    private final DefaultResourcePack mcDefaultResourcePack;
+    public final DefaultResourcePack mcDefaultResourcePack;
     private ResourcePackRepository mcResourcePackRepository;
-    private LanguageManager mcLanguageManager;
+    public LanguageManager mcLanguageManager;
     private IStream stream;
     private Framebuffer framebufferMc;
     private TextureMap textureMapBlocks;
@@ -506,7 +509,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         this.refreshResources();
         this.renderEngine = new TextureManager(this.mcResourceManager);
         this.mcResourceManager.registerReloadListener(this.renderEngine);
+        FontManager.injectFontInstances();
         this.drawSplashScreen(this.renderEngine);
+        SplashScreen.setStage(40, "Rendering Engine");
         this.initStream();
         this.skinManager = new SkinManager(this.renderEngine, new File(this.fileAssets, "skins"), this.sessionService);
         this.saveLoader = new AnvilSaveConverter(new File(this.mcDataDir, "saves"));
@@ -526,6 +531,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         this.mcResourceManager.registerReloadListener(this.standardGalacticFontRenderer);
         this.mcResourceManager.registerReloadListener(new GrassColorReloadListener());
         this.mcResourceManager.registerReloadListener(new FoliageColorReloadListener());
+
+        SplashScreen.setStage(45, "Textures");
+
         AchievementList.openInventory.setStatStringFormatter(new IStatStringFormat()
         {
             public String formatString(String str)
@@ -553,6 +561,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         GlStateManager.matrixMode(5889);
         GlStateManager.loadIdentity();
         GlStateManager.matrixMode(5888);
+        SplashScreen.setStage(50, "Pre startup");
         this.checkGLError("Startup");
         this.textureMapBlocks = new TextureMap("textures");
         this.textureMapBlocks.setMipmapLevels(this.gameSettings.mipmapLevels);
@@ -575,17 +584,19 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         GlStateManager.viewport(0, 0, this.displayWidth, this.displayHeight);
         this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
         this.checkGLError("Post startup");
+        SplashScreen.setStage(60, "Post startup");
         // Client hook
         LiquidCore.getCore().startInject();
+        SplashScreen.stopDrawing();
         this.ingameGUI = new GuiIngame(this);
 
         if (this.serverName != null)
         {
-            this.displayGuiScreen(new GuiConnecting(new GuiMainMenu(), this, this.serverName, this.serverPort));
+            this.displayGuiScreen(new GuiConnecting(new GuiGlobalMenu(), this, this.serverName, this.serverPort));
         }
         else
         {
-            this.displayGuiScreen(new GuiMainMenu());
+            this.displayGuiScreen(new GuiGlobalMenu());
         }
 
         this.renderEngine.deleteTexture(this.mojangLogo);
@@ -910,7 +921,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     private void drawSplashScreen(TextureManager textureManagerInstance) throws LWJGLException
     {
-        ScaledResolution scaledresolution = new ScaledResolution(this);
+        /*ScaledResolution scaledresolution = new ScaledResolution(this);
         int i = scaledresolution.getScaleFactor();
         Framebuffer framebuffer = new Framebuffer(scaledresolution.getScaledWidth() * i, scaledresolution.getScaledHeight() * i, true);
         framebuffer.bindFramebuffer(false);
@@ -959,12 +970,13 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         framebuffer.framebufferRender(scaledresolution.getScaledWidth() * i, scaledresolution.getScaledHeight() * i);
         GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(516, 0.1F);
-        this.updateDisplay();
+        this.updateDisplay();*/
+        SplashScreen.startDrawing();
     }
 
     /**
      * Draw with the WorldRenderer
-     *  
+     *
      * @param posX X position for the render
      * @param posY Y position for the render
      * @param texU X position for the texture
@@ -1009,14 +1021,14 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         if (guiScreenIn == null && this.theWorld == null)
         {
-            guiScreenIn = new GuiMainMenu();
+            guiScreenIn = new GuiGlobalMenu();
         }
         else if (guiScreenIn == null && this.thePlayer.getHealth() <= 0.0F)
         {
             guiScreenIn = new GuiGameOver();
         }
 
-        if (guiScreenIn instanceof GuiMainMenu)
+        if (guiScreenIn instanceof GuiGlobalMenu)
         {
             this.gameSettings.showDebugProfilerChart = false;
             this.ingameGUI.getChatGUI().clearChatMessages();
@@ -1103,7 +1115,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
      */
     private void runGameLoop() throws IOException
     {
-        if (!LiquidCore.isStarting) new LoopEvent().call();
+        new LoopEvent().call();
 
         final long currentTime = getTime();
         final int deltaTime = (int) (currentTime - lastFrame);
@@ -1736,7 +1748,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     /**
      * Called to resize the current screen.
      */
-    private void resize(int width, int height)
+    public void resize(int width, int height)
     {
         this.displayWidth = Math.max(1, width);
         this.displayHeight = Math.max(1, height);
@@ -2676,7 +2688,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     /**
      * Return an ItemStack with the NBTTag of the TileEntity ("Owner" if the block is a skull)
-     *  
+     *
      * @param itemIn The item from the block picked
      * @param meta Metadata of the item
      * @param tileEntityIn TileEntity of the block picked
@@ -2985,7 +2997,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
      */
     public static int getGLMaximumTextureSize()
     {
-        for (int i = 16384; i > 0; i >>= 1)
+        /*for (int i = 16384; i > 0; i >>= 1)
         {
             GL11.glTexImage2D(GL11.GL_PROXY_TEXTURE_2D, 0, GL11.GL_RGBA, i, i, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)((ByteBuffer)null));
             int j = GL11.glGetTexLevelParameteri(GL11.GL_PROXY_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
@@ -2996,7 +3008,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             }
         }
 
-        return -1;
+        return -1;*/
+        return SplashScreen.getMaxTextureSize();
     }
 
     /**
@@ -3353,7 +3366,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     /**
      * Set if the player is connected to a realms server
-     *  
+     *
      * @param isConnected The value that set if the player is connected to a realms server or not
      */
     public void setConnectedToRealms(boolean isConnected)

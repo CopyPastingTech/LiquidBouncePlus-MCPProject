@@ -1,5 +1,8 @@
 package net.minecraft.client.gui;
 
+import club.lbplus.cores.event.EventType;
+import club.lbplus.impls.events.render.Render2DEvent;
+import club.lbplus.impls.events.render.RenderTooltipEvent;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -130,6 +133,10 @@ public class GuiIngame extends Gui
     public void renderGameOverlay(float partialTicks)
     {
         ScaledResolution scaledresolution = new ScaledResolution(this.mc);
+        Render2DEvent event = new Render2DEvent(partialTicks, scaledresolution);
+        event.setType(EventType.PRE);
+        event.call();
+
         int i = scaledresolution.getScaledWidth();
         int j = scaledresolution.getScaledHeight();
         this.mc.entityRenderer.setupOverlayRendering();
@@ -363,6 +370,9 @@ public class GuiIngame extends Gui
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.disableLighting();
         GlStateManager.enableAlpha();
+
+        event.setType(EventType.POST);
+        event.call();
     }
 
     protected void renderTooltip(ScaledResolution sr, float partialTicks)
@@ -394,6 +404,8 @@ public class GuiIngame extends Gui
             GlStateManager.disableRescaleNormal();
             GlStateManager.disableBlend();
         }
+
+        new RenderTooltipEvent(partialTicks, sr).call();
     }
 
     public void renderHorseJumpBar(ScaledResolution scaledRes, int x)

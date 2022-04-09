@@ -50,16 +50,16 @@ public class FontRenderer implements IResourceManagerReloadListener
      * drop shadows.
      */
     private int[] colorCode = new int[32];
-    private ResourceLocation locationFontTexture;
+    protected ResourceLocation locationFontTexture;
 
     /** The RenderEngine used to load and setup glyph textures. */
     private final TextureManager renderEngine;
 
     /** Current X coordinate at which to draw the next character. */
-    private float posX;
+    protected float posX;
 
     /** Current Y coordinate at which to draw the next character. */
-    private float posY;
+    protected float posY;
 
     /**
      * If true, strings should be rendered with Unicode fonts instead of the default.png font
@@ -69,19 +69,19 @@ public class FontRenderer implements IResourceManagerReloadListener
     /**
      * If true, the Unicode Bidirectional Algorithm should be run before rendering any string.
      */
-    private boolean bidiFlag;
+    protected boolean bidiFlag;
 
     /** Used to specify new red value for the current color. */
-    private float red;
+    protected float red;
 
     /** Used to specify new blue value for the current color. */
-    private float blue;
+    protected float blue;
 
     /** Used to specify new green value for the current color. */
-    private float green;
+    protected float green;
 
     /** Used to speify new alpha value for the current color. */
-    private float alpha;
+    protected float alpha;
 
     /** Text color of the currently rendering string. */
     private int textColor;
@@ -446,7 +446,7 @@ public class FontRenderer implements IResourceManagerReloadListener
     /**
      * Apply Unicode Bidirectional Algorithm to string and return a new possibly reordered string for visual rendering.
      */
-    private String bidiReorder(String text)
+    protected String bidiReorder(String text)
     {
         try
         {

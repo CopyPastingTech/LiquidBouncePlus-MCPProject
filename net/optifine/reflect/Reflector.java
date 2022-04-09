@@ -147,9 +147,6 @@ public class Reflector
     public static ReflectorClass ModelWolf = new ReflectorClass(ModelWolf.class);
     public static ReflectorField ModelWolf_tail = new ReflectorField(ModelWolf, ModelRenderer.class, 6);
     public static ReflectorField ModelWolf_mane = new ReflectorField(ModelWolf, ModelRenderer.class, 7);
-    public static ReflectorClass OptiFineClassTransformer = new ReflectorClass("optifine.OptiFineClassTransformer");
-    public static ReflectorField OptiFineClassTransformer_instance = new ReflectorField(OptiFineClassTransformer, "instance");
-    public static ReflectorMethod OptiFineClassTransformer_getOptiFineResource = new ReflectorMethod(OptiFineClassTransformer, "getOptiFineResource");
     public static ReflectorClass RenderBoat = new ReflectorClass(RenderBoat.class);
     public static ReflectorField RenderBoat_modelBoat = new ReflectorField(RenderBoat, ModelBase.class);
     public static ReflectorClass RenderMinecart = new ReflectorClass(RenderMinecart.class);

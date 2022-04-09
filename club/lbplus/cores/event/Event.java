@@ -43,6 +43,8 @@ public abstract class Event {
 	}
 
 	private static void call(Event event) {
+		if (LiquidCore.getCore().eventManager == null) return;
+
 		ArrayHelper<Data> dataList = LiquidCore.getCore().eventManager.get(event.getClass());
 		if (dataList != null) {
 			for (Data data : dataList) {
