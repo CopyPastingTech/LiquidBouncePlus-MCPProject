@@ -411,6 +411,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     public void run()
     {
+        if (this.displayWidth < 1067)
+            displayWidth = 1067;
+
+        if (this.displayHeight < 622)
+            displayHeight = 622;
         this.running = true;
 
         try
@@ -511,7 +516,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         this.mcResourceManager.registerReloadListener(this.renderEngine);
         FontManager.injectFontInstances();
         this.drawSplashScreen(this.renderEngine);
-        SplashScreen.setStage(40, "Rendering Engine");
+        SplashScreen.setStage(40);
         this.initStream();
         this.skinManager = new SkinManager(this.renderEngine, new File(this.fileAssets, "skins"), this.sessionService);
         this.saveLoader = new AnvilSaveConverter(new File(this.mcDataDir, "saves"));
@@ -532,7 +537,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         this.mcResourceManager.registerReloadListener(new GrassColorReloadListener());
         this.mcResourceManager.registerReloadListener(new FoliageColorReloadListener());
 
-        SplashScreen.setStage(45, "Textures");
+        SplashScreen.setStage(45);
 
         AchievementList.openInventory.setStatStringFormatter(new IStatStringFormat()
         {
@@ -561,7 +566,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         GlStateManager.matrixMode(5889);
         GlStateManager.loadIdentity();
         GlStateManager.matrixMode(5888);
-        SplashScreen.setStage(50, "Pre startup");
+        SplashScreen.setStage(50);
         this.checkGLError("Startup");
         this.textureMapBlocks = new TextureMap("textures");
         this.textureMapBlocks.setMipmapLevels(this.gameSettings.mipmapLevels);
@@ -584,7 +589,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         GlStateManager.viewport(0, 0, this.displayWidth, this.displayHeight);
         this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
         this.checkGLError("Post startup");
-        SplashScreen.setStage(60, "Post startup");
+        SplashScreen.setStage(60);
         // Client hook
         LiquidCore.getCore().startInject();
         SplashScreen.stopDrawing();

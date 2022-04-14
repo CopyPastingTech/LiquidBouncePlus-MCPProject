@@ -5,6 +5,8 @@ import club.lbplus.cores.misc.KeyHandler;
 import club.lbplus.cores.misc.SoundHandler;
 import club.lbplus.cores.module.ModManager;
 import club.lbplus.ui.guis.SplashScreen;
+import club.lbplus.utils.animate.AnimBackground;
+import club.lbplus.utils.render.TextureUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,24 +33,30 @@ public class LiquidCore {
         startMS = System.currentTimeMillis();
         log("Starting the client.");
 
-        SplashScreen.setStage(70, "Event Manager");
+        SplashScreen.setStage(70);
 
         log("Event Manager & Value Manager at " + getRunMS());
         eventManager = new EventManager();
 
-        SplashScreen.setStage(80, "Mod Manager");
+        SplashScreen.setStage(80);
 
         log("Module Manager at " + getRunMS());
         modManager = new ModManager();
 
-        SplashScreen.setStage(90, "Key & Sound Handler");
+        SplashScreen.setStage(90);
 
         log("Key Handler & Sound Handler at " + getRunMS());
         keyHandler = new KeyHandler();
         eventManager.register(keyHandler);
         soundHandler = new SoundHandler();
 
-        SplashScreen.setStage(100, "Finalizing...");
+        log("Anim Background at " + getRunMS());
+        AnimBackground.initFunc();
+
+        log("Texture Utils at " + getRunMS());
+        TextureUtils.initFunc();
+
+        SplashScreen.setStage(100);
 
         log("Successfully loaded the client in " + getRunMS());
         isStarting = false;

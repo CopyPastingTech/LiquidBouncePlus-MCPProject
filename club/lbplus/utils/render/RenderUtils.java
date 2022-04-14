@@ -1,11 +1,14 @@
 package club.lbplus.utils.render;
 
 import club.lbplus.utils.GlobalInstances;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 
@@ -18,6 +21,11 @@ public class RenderUtils extends GlobalInstances {
     public static double deltaTime = 0F;
 
     public static void drawRoundedRect(double paramXStart, double paramYStart, double paramXEnd, double paramYEnd, final double radius, final boolean vbo, final int color) {
+        if (radius == 0) {
+            Gui.drawRect(paramXStart, paramYStart, paramXEnd, paramYEnd, color);
+            return;
+        }
+
         float alpha = (color >> 24 & 0xFF) / 255.0F;
         float red = (color >> 16 & 0xFF) / 255.0F;
         float green = (color >> 8 & 0xFF) / 255.0F;
@@ -70,7 +78,7 @@ public class RenderUtils extends GlobalInstances {
         glPushMatrix();
         glEnable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
         glEnable(GL_LINE_SMOOTH);
         glLineWidth(1);
 
@@ -96,6 +104,11 @@ public class RenderUtils extends GlobalInstances {
 
     // rTL = radius top left, rTR = radius top right, rBR = radius bottom right, rBL = radius bottom left
     public static void customRoundedRect(double paramXStart, double paramYStart, double paramXEnd, double paramYEnd, final double rTL, final double rTR, final double rBR, final double rBL, final boolean vbo, final int color) {
+        if (rTL == 0 && rTR == 0 && rBR == 0 && rBL == 0) {
+            Gui.drawRect(paramXStart, paramYStart, paramXEnd, paramYEnd, color);
+            return;
+        }
+
         float alpha = (color >> 24 & 0xFF) / 255.0F;
         float red = (color >> 16 & 0xFF) / 255.0F;
         float green = (color >> 8 & 0xFF) / 255.0F;
@@ -285,6 +298,24 @@ public class RenderUtils extends GlobalInstances {
         GlStateManager.color(0, 0, 0);
         glEnd();
         glPopAttrib();
+    }
+
+    public static void drawImage(ResourceLocation image, double x, double y, double width, double height) {
+        drawImage(image, x, y, width, height, 1f, 1f, 1f, 1f);
+    }
+
+    public static void drawImage(ResourceLocation image, double x, double y, double width, double height, float r, float g, float b, float a) {
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glDepthMask(false);
+        OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        glColor4f(r, g, b, a);
+        mc.getTextureManager().bindTexture(image);
+        Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, width, height, width, height);
+        glDepthMask(true);
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
     }
 
 }

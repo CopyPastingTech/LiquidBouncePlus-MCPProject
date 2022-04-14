@@ -188,6 +188,7 @@ public final class TTFFontRenderer extends CustomFont {
             }
          }
 
+         GlStateManager.disableBlend();
          GL11.glPopMatrix();
          return (float)x / 2.0F;
       }

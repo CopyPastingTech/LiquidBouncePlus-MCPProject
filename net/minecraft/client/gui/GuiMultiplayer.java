@@ -1,5 +1,8 @@
 package net.minecraft.client.gui;
 
+import club.lbplus.utils.misc.CustomButton;
+import club.lbplus.utils.render.RenderUtils;
+import club.lbplus.utils.render.Stencil;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import java.io.IOException;
@@ -9,10 +12,16 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
 import net.minecraft.client.network.LanServerDetector;
 import net.minecraft.client.network.OldServerPinger;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
 {
@@ -52,6 +61,8 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
         Keyboard.enableRepeatEvents(true);
         this.buttonList.clear();
 
+        final int distTop = 40;//this.height - (this.height / 2 + 160);
+
         if (!this.initialized)
         {
             this.initialized = true;
@@ -69,12 +80,14 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
                 logger.warn("Unable to start LAN server detection: " + exception.getMessage());
             }
 
-            this.serverListSelector = new ServerSelectionList(this, this.mc, this.width, this.height, 32, this.height - 64, 36);
+            this.serverListSelector = new ServerSelectionList(this, this.mc, this.width, this.height, distTop, this.height - distTop, 36);
             this.serverListSelector.func_148195_a(this.savedServerList);
+            this.serverListSelector.setSlotXBoundsFromLeft(40);
         }
         else
         {
-            this.serverListSelector.setDimensions(this.width, this.height, 32, this.height - 64);
+            this.serverListSelector.setDimensions(this.width, this.height, distTop, this.height - distTop);
+            this.serverListSelector.setSlotXBoundsFromLeft(40);
         }
 
         this.createButtons();
@@ -91,13 +104,20 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
 
     public void createButtons()
     {
-        this.buttonList.add(this.btnEditServer = new GuiButton(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit", new Object[0])));
+        /*this.buttonList.add(this.btnEditServer = new GuiButton(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit", new Object[0])));
         this.buttonList.add(this.btnDeleteServer = new GuiButton(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete", new Object[0])));
         this.buttonList.add(this.btnSelectServer = new GuiButton(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select", new Object[0])));
         this.buttonList.add(new GuiButton(4, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("selectServer.direct", new Object[0])));
         this.buttonList.add(new GuiButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add", new Object[0])));
         this.buttonList.add(new GuiButton(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh", new Object[0])));
-        this.buttonList.add(new GuiButton(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel", new Object[0])));
+        this.buttonList.add(new GuiButton(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel", new Object[0])));*/
+        this.buttonList.add(this.btnSelectServer = new CustomButton(1, this.width / 2 - 220, this.height / 2 - 84, 80, 24, 3F, 3F, 0F, 0F, CustomButton.Type.CONNECT));
+        this.buttonList.add(new CustomButton(4, this.width / 2 - 220, this.height / 2 - 60, 80, 24, 0F, 0F, 0F, 0F, CustomButton.Type.DIRECT));
+        this.buttonList.add(new CustomButton(3, this.width / 2 - 220, this.height / 2 - 36, 80, 24, 0F, 0F, 0F, 0F, CustomButton.Type.ADD));
+        this.buttonList.add(this.btnDeleteServer = new CustomButton(2, this.width / 2 - 220, this.height / 2 - 12, 80, 24, 0F, 0F, 0F, 0F, CustomButton.Type.REMOVE));
+        this.buttonList.add(this.btnEditServer = new CustomButton(7, this.width / 2 - 220, this.height / 2 + 12, 80, 24, 0F, 0F, 0F, 0F, CustomButton.Type.EDIT));
+        this.buttonList.add(new CustomButton(8, this.width / 2 - 220, this.height / 2 + 36, 80, 24, 0F, 0F, 0F, 0F, CustomButton.Type.REFRESH));
+        this.buttonList.add(new CustomButton(0, this.width / 2 - 220, this.height / 2 + 60, 80, 24, 0F, 0F, 3F, 3F, CustomButton.Type.BACK));
         this.selectServer(this.serverListSelector.func_148193_k());
     }
 
@@ -369,14 +389,110 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
     {
         this.hoveringText = null;
         this.drawDefaultBackground();
-        this.serverListSelector.drawScreen(mouseX, mouseY, partialTicks);
-        this.drawCenteredString(this.fontRendererObj, I18n.format("multiplayer.title", new Object[0]), this.width / 2, 20, 16777215);
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        //this.serverListSelector.drawScreen(mouseX, mouseY, partialTicks);
+        //this.drawCenteredString(this.fontRendererObj, I18n.format("multiplayer.title", new Object[0]), this.width / 2, 20, 16777215);
 
+        //Stencil.write(true);
+        RenderUtils.drawRoundedRect(this.width / 2 - 235, 35, this.width / 2 + 235, this.height - 35, 6F, true, 0xA0000000);
+        //Stencil.erase(true);
+
+        RenderUtils.makeScissorBox(this.width / 2 - 235, 35, this.width / 2 + 235, this.height - 35);
+        GL11.glEnable(3089);
+
+        if (this.serverListSelector.field_178041_q)
+        {
+            this.serverListSelector.mouseX = mouseX;
+            this.serverListSelector.mouseY = mouseY;
+            this.serverListSelector.drawBackground();
+            int i = this.serverListSelector.getScrollBarX();
+            int j = i + 6;
+            this.serverListSelector.bindAmountScrolled();
+            GlStateManager.disableLighting();
+            GlStateManager.disableFog();
+            Tessellator tessellator = Tessellator.getInstance();
+            WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+            //this.serverListSelector.drawContainerBackground(tessellator);
+            int k = this.serverListSelector.left + this.serverListSelector.width / 2 - this.serverListSelector.getListWidth() / 2 + 2;
+            int l = this.serverListSelector.top + 4 - (int)this.serverListSelector.amountScrolled;
+
+            if (this.serverListSelector.hasListHeader)
+            {
+                this.serverListSelector.drawListHeader(k, l, tessellator);
+            }
+
+            this.serverListSelector.drawSelectionBox(k, l, mouseX, mouseY);
+            GlStateManager.disableDepth();
+            int i1 = 4;
+            //this.serverListSelector.overlayBackground(0, this.serverListSelector.top, 255, 255);
+            //this.serverListSelector.overlayBackground(this.serverListSelector.bottom, this.serverListSelector.height, 255, 255);
+            /*GlStateManager.enableBlend();
+            GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
+            GlStateManager.disableAlpha();
+            GlStateManager.shadeModel(7425);
+            GlStateManager.disableTexture2D();
+            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+            worldrenderer.pos(this.serverListSelector.left, (this.serverListSelector.top + i1), 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 0).endVertex();
+            worldrenderer.pos(this.serverListSelector.right, (this.serverListSelector.top + i1), 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 0).endVertex();
+            worldrenderer.pos(this.serverListSelector.right, this.serverListSelector.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+            worldrenderer.pos(this.serverListSelector.left, this.serverListSelector.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+            tessellator.draw();
+            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+            worldrenderer.pos(this.serverListSelector.left, this.serverListSelector.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+            worldrenderer.pos(this.serverListSelector.right, this.serverListSelector.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+            worldrenderer.pos(this.serverListSelector.right, (this.serverListSelector.bottom - i1), 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 0).endVertex();
+            worldrenderer.pos(this.serverListSelector.left, (this.serverListSelector.bottom - i1), 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 0).endVertex();
+            tessellator.draw();*/
+            int j1 = this.serverListSelector.func_148135_f();
+
+            if (j1 > 0)
+            {
+                int k1 = (this.serverListSelector.bottom - this.serverListSelector.top) * (this.serverListSelector.bottom - this.serverListSelector.top) / this.serverListSelector.getContentHeight();
+                k1 = MathHelper.clamp_int(k1, 32, this.serverListSelector.bottom - this.serverListSelector.top - 8);
+                int l1 = (int)this.serverListSelector.amountScrolled * (this.serverListSelector.bottom - this.serverListSelector.top - k1) / j1 + this.serverListSelector.top;
+
+                if (l1 < this.serverListSelector.top)
+                {
+                    l1 = this.serverListSelector.top;
+                }
+
+                /*worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+                worldrenderer.pos(i, this.serverListSelector.bottom, 0.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(j, this.serverListSelector.bottom, 0.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(j, this.serverListSelector.top, 0.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(i, this.serverListSelector.top, 0.0D).color(0, 0, 0, 255).endVertex();
+                tessellator.draw();
+                worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+                worldrenderer.pos(i, (l1 + k1), 0.0D).color(128, 128, 128, 255).endVertex();
+                worldrenderer.pos(j, (l1 + k1), 0.0D).color(128, 128, 128, 255).endVertex();
+                worldrenderer.pos(j, l1, 0.0D).color(128, 128, 128, 255).endVertex();
+                worldrenderer.pos(i, l1, 0.0D).color(128, 128, 128, 255).endVertex();
+                tessellator.draw();
+                worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+                worldrenderer.pos(i, (l1 + k1 - 1), 0.0D).color(192, 192, 192, 255).endVertex();
+                worldrenderer.pos((j - 1), (l1 + k1 - 1), 0.0D).color(192, 192, 192, 255).endVertex();
+                worldrenderer.pos((j - 1), l1, 0.0D).color(192, 192, 192, 255).endVertex();
+                worldrenderer.pos(i, l1, 0.0D).color(192, 192, 192, 255).endVertex();
+                tessellator.draw();*/
+                RenderUtils.drawRoundedRect(i, this.serverListSelector.top + 4, j, this.serverListSelector.bottom - 4, (j - i) / 2, true, 0xA0202020);
+                RenderUtils.drawRoundedRect(i, l1 + 4, j, l1 + k1 - 4, (j - i) / 2, true, 0xFF999999);
+            }
+
+
+            this.serverListSelector.func_148142_b(mouseX, mouseY);
+            /*GlStateManager.enableTexture2D();
+            GlStateManager.shadeModel(7424);
+            GlStateManager.enableAlpha();
+            GlStateManager.disableBlend();*/
+        }
+
+        GL11.glDisable(3089);
+        //Stencil.dispose();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+/*
         if (this.hoveringText != null)
         {
             this.drawHoveringText(Lists.newArrayList(Splitter.on("\n").split(this.hoveringText)), mouseX, mouseY);
-        }
+        }*/
     }
 
     public void connectToSelected()

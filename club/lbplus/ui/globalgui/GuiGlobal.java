@@ -9,4 +9,10 @@ public class GuiGlobal extends GuiScreen {
         return instance == null ? instance = new GuiGlobal() : instance;
     }
 
+    private boolean isClosing = false;
+
+    public void initGui() {
+
+    }
+
 }

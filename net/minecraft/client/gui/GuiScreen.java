@@ -1,5 +1,6 @@
 package net.minecraft.client.gui;
 
+import club.lbplus.utils.animate.AnimBackground;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -683,7 +684,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
-        Tessellator tessellator = Tessellator.getInstance();
+        /*Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
         this.mc.getTextureManager().bindTexture(optionsBackground);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -693,7 +694,8 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         worldrenderer.pos((double)this.width, (double)this.height, 0.0D).tex((double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F + (float)tint)).color(64, 64, 64, 255).endVertex();
         worldrenderer.pos((double)this.width, 0.0D, 0.0D).tex((double)((float)this.width / 32.0F), (double)tint).color(64, 64, 64, 255).endVertex();
         worldrenderer.pos(0.0D, 0.0D, 0.0D).tex(0.0D, (double)tint).color(64, 64, 64, 255).endVertex();
-        tessellator.draw();
+        tessellator.draw();*/
+        AnimBackground.handleDraw(0, 0, width, height);
     }
 
     /**

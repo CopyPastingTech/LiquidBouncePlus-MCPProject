@@ -91,7 +91,7 @@ public class ServerSelectionList extends GuiListExtended
 
     protected int getScrollBarX()
     {
-        return super.getScrollBarX() + 30;
+        return super.getScrollBarX() + 95;
     }
 
     /**
@@ -99,6 +99,6 @@ public class ServerSelectionList extends GuiListExtended
      */
     public int getListWidth()
     {
-        return super.getListWidth() + 85;
+        return super.getListWidth() + 125;
     }
 }

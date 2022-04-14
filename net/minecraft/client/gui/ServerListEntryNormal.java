@@ -1,5 +1,8 @@
 package net.minecraft.client.gui;
 
+import club.lbplus.utils.fonts.FontManager;
+import club.lbplus.utils.render.RenderUtils;
+import club.lbplus.utils.render.Stencil;
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.buffer.ByteBuf;
@@ -78,17 +81,18 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
         boolean flag = this.server.version > 47;
         boolean flag1 = this.server.version < 47;
         boolean flag2 = flag || flag1;
-        this.mc.fontRendererObj.drawString(this.server.serverName, x + 32 + 3, y + 1, 16777215);
+        FontManager.getFont("ProductSans").drawString(this.server.serverName, x + 32 + 3 + 15, y + 1, 16777215);
+        GlStateManager.enableTexture2D();
         List<String> list = this.mc.fontRendererObj.listFormattedStringToWidth(this.server.serverMOTD, listWidth - 32 - 2);
 
         for (int i = 0; i < Math.min(list.size(), 2); ++i)
         {
-            this.mc.fontRendererObj.drawString((String)list.get(i), x + 32 + 3, y + 12 + this.mc.fontRendererObj.FONT_HEIGHT * i, 8421504);
+            this.mc.fontRendererObj.drawString((String)list.get(i), x + 32 + 3, y + 12 + 11 * i, 8421504);
         }
 
-        String s2 = flag2 ? EnumChatFormatting.DARK_RED + this.server.gameVersion : this.server.populationInfo;
-        int j = this.mc.fontRendererObj.getStringWidth(s2);
-        this.mc.fontRendererObj.drawString(s2, x + listWidth - j - 15 - 2, y + 1, 8421504);
+        String s2 = flag2 ? EnumChatFormatting.DARK_RED + this.server.gameVersion : "Players: " + this.server.populationInfo;
+        int j = FontManager.getFont("ProductSans").getStringWidth(s2);
+        FontManager.getFont("ProductSans").drawString(s2, x + listWidth - j - 8, y + 1, 8421504);
         int k = 0;
         String s = null;
         int l;
@@ -152,7 +156,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(Gui.icons);
-        Gui.drawModalRectWithCustomSizedTexture(x + listWidth - 15, y, (float)(k * 10), (float)(176 + l * 8), 10, 8, 256.0F, 256.0F);
+        Gui.drawModalRectWithCustomSizedTexture(/*x + listWidth - 15*/x + 32 + 5, y, (float)(k * 10), (float)(176 + l * 8), 10, 8, 256.0F, 256.0F);
 
         if (this.server.getBase64EncodedIconData() != null && !this.server.getBase64EncodedIconData().equals(this.field_148299_g))
         {
@@ -166,6 +170,9 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
             this.owner.getServerList().saveServerList();
         }
 
+        Stencil.write(false);
+        RenderUtils.drawRoundedRect(x, y, x + 32, y + 32, 6F, true, -1);
+        Stencil.erase(true);
         if (this.field_148305_h != null)
         {
             this.drawTextureAt(x, y, this.serverIcon);
@@ -231,6 +238,8 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
                 }
             }
         }
+
+        Stencil.dispose();
     }
 
     protected void drawTextureAt(int p_178012_1_, int p_178012_2_, ResourceLocation p_178012_3_)
